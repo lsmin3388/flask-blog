@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, abort
 
 from models import (
     init_db, get_all_posts, get_post,
-    create_post, update_post, delete_post
+    create_post, update_post, delete_post, get_stats
 )
 
 app = Flask(__name__)
@@ -54,6 +54,12 @@ def edit(post_id):
 def delete(post_id):
     delete_post(post_id)
     return redirect(url_for('index'))
+
+
+@app.route('/stats')
+def stats():
+    stats_data = get_stats()
+    return render_template('stats.html', stats=stats_data)
 
 
 if __name__ == '__main__':

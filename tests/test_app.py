@@ -155,3 +155,47 @@ class TestDetail:
     def test_post_detail_not_found(self, client):
         response = client.get('/post/999')
         assert response.status_code == 404
+
+
+class TestStats:
+    def test_stats_page_returns_200(self, client):
+        response = client.get('/stats')
+        assert response.status_code == 200
+
+    def test_stats_shows_total_count(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('글1', '내용', 'tech')
+            )
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('글2', '내용', 'life')
+            )
+            db.commit()
+        response = client.get('/stats')
+        assert response.status_code == 200
+        data = response.data.decode()
+        assert '2' in data
+
+    def test_stats_shows_category_count(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('글1', '내용', 'tech')
+            )
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('글2', '내용', 'tech')
+            )
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('글3', '내용', 'life')
+            )
+            db.commit()
+        response = client.get('/stats')
+        data = response.data.decode()
+        assert 'tech' in data
+        assert 'life' in data

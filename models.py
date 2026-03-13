@@ -82,3 +82,20 @@ def delete_post(post_id):
     db = get_db()
     db.execute("DELETE FROM posts WHERE id = ?", (post_id,))
     db.commit()
+
+
+def get_stats():
+    db = get_db()
+    total = db.execute("SELECT COUNT(*) as count FROM posts").fetchone()['count']
+    by_category = db.execute(
+        "SELECT category, COUNT(*) as count FROM posts GROUP BY category ORDER BY count DESC"
+    ).fetchall()
+    by_month = db.execute(
+        "SELECT strftime('%Y-%m', created_at) as month, COUNT(*) as count "
+        "FROM posts GROUP BY month ORDER BY month DESC"
+    ).fetchall()
+    return {
+        'total': total,
+        'by_category': by_category,
+        'by_month': by_month
+    }
