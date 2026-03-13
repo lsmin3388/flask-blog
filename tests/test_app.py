@@ -1,17 +1,39 @@
+import os
+import sqlite3
+import tempfile
+
 import pytest
 
 from app import app
-from models import init_db
+from models import get_db
 
 
 @pytest.fixture
 def client():
+    db_fd, db_path = tempfile.mkstemp()
     app.config['TESTING'] = True
-    app.config['DATABASE'] = ':memory:'
+    app.config['DATABASE'] = db_path
+
+    with app.app_context():
+        db = sqlite3.connect(db_path)
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                category TEXT DEFAULT 'general',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        db.commit()
+        db.close()
 
     with app.test_client() as client:
-        init_db(app)
         yield client
+
+    os.close(db_fd)
+    os.unlink(db_path)
 
 
 class TestIndex:
@@ -25,7 +47,6 @@ class TestIndex:
 
     def test_index_page_shows_posts(self, client):
         with app.app_context():
-            from models import get_db
             db = get_db()
             db.execute(
                 "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
@@ -37,7 +58,6 @@ class TestIndex:
 
     def test_index_page_filter_by_category(self, client):
         with app.app_context():
-            from models import get_db
             db = get_db()
             db.execute(
                 "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
