@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 
 from models import (
     init_db, get_all_posts, get_post,
@@ -17,6 +17,14 @@ def index():
     category = request.args.get('category')
     posts = get_all_posts(category)
     return render_template('index.html', posts=posts, category=category)
+
+
+@app.route('/post/<int:post_id>')
+def post_detail(post_id):
+    post = get_post(post_id)
+    if post is None:
+        abort(404)
+    return render_template('post.html', post=post)
 
 
 @app.route('/create', methods=['GET', 'POST'])

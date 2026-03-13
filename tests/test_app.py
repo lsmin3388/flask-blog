@@ -126,3 +126,32 @@ class TestCRUD:
         response = client.post('/delete/1', follow_redirects=True)
         assert response.status_code == 200
         assert '삭제할 글'.encode() not in response.data
+
+
+class TestDetail:
+    def test_post_detail_returns_200(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('상세 글', '상세 내용입니다', 'tech')
+            )
+            db.commit()
+        response = client.get('/post/1')
+        assert response.status_code == 200
+
+    def test_post_detail_shows_content(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('상세 글', '상세 내용입니다', 'tech')
+            )
+            db.commit()
+        response = client.get('/post/1')
+        assert '상세 글'.encode() in response.data
+        assert '상세 내용입니다'.encode() in response.data
+
+    def test_post_detail_not_found(self, client):
+        response = client.get('/post/999')
+        assert response.status_code == 404

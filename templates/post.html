@@ -1,3 +1,21 @@
 {% extends "base.html" %}
+{% block title %}{{ post['title'] }} - Flask Blog{% endblock %}
 {% block content %}
+<article>
+    <h1>{{ post['title'] }}</h1>
+    <div class="post-meta">
+        <span class="category">{{ post['category'] }}</span>
+        <span class="date">{{ post['created_at'] }}</span>
+    </div>
+    <div class="post-content">
+        {{ post['content'] }}
+    </div>
+    <div class="post-actions">
+        <a href="/edit/{{ post['id'] }}">수정</a>
+        <form method="POST" action="/delete/{{ post['id'] }}" style="display:inline;">
+            <button type="submit">삭제</button>
+        </form>
+    </div>
+</article>
+<a href="/">목록으로</a>
 {% endblock %}
