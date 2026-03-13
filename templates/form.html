@@ -1,3 +1,22 @@
 {% extends "base.html" %}
+{% block title %}{% if post %}글 수정{% else %}글 작성{% endif %} - Flask Blog{% endblock %}
 {% block content %}
+<h1>{% if post %}글 수정{% else %}글 작성{% endif %}</h1>
+<form method="POST">
+    <label for="title">제목</label>
+    <input type="text" name="title" id="title" value="{{ post['title'] if post else '' }}" required>
+
+    <label for="category">카테고리</label>
+    <select name="category" id="category">
+        <option value="general" {% if post and post['category'] == 'general' %}selected{% endif %}>일반</option>
+        <option value="tech" {% if post and post['category'] == 'tech' %}selected{% endif %}>기술</option>
+        <option value="life" {% if post and post['category'] == 'life' %}selected{% endif %}>일상</option>
+        <option value="study" {% if post and post['category'] == 'study' %}selected{% endif %}>공부</option>
+    </select>
+
+    <label for="content">내용</label>
+    <textarea name="content" id="content" required>{{ post['content'] if post else '' }}</textarea>
+
+    <button type="submit">{% if post %}수정{% else %}작성{% endif %}</button>
+</form>
 {% endblock %}

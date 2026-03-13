@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.db
+.env
+venv/
+.venv/
+.git/
+.github/
+.pytest_cache/
+.claude/
+CLAUDE.md
+.DS_Store
+tests/
