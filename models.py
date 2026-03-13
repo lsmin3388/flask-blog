@@ -53,3 +53,32 @@ def get_all_posts(category=None):
             "SELECT * FROM posts ORDER BY created_at DESC"
         ).fetchall()
     return posts
+
+
+def get_post(post_id):
+    db = get_db()
+    return db.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
+
+
+def create_post(title, content, category='general'):
+    db = get_db()
+    db.execute(
+        "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+        (title, content, category)
+    )
+    db.commit()
+
+
+def update_post(post_id, title, content, category):
+    db = get_db()
+    db.execute(
+        "UPDATE posts SET title = ?, content = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        (title, content, category, post_id)
+    )
+    db.commit()
+
+
+def delete_post(post_id):
+    db = get_db()
+    db.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+    db.commit()

@@ -71,3 +71,58 @@ class TestIndex:
             response = client.get('/?category=tech')
             assert '기술 글'.encode() in response.data
             assert '일상 글'.encode() not in response.data
+
+
+class TestCRUD:
+    def test_create_page_returns_200(self, client):
+        response = client.get('/create')
+        assert response.status_code == 200
+
+    def test_create_post(self, client):
+        response = client.post('/create', data={
+            'title': '새 글',
+            'content': '새 글 내용',
+            'category': 'tech'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+        assert '새 글'.encode() in response.data
+
+    def test_edit_page_returns_200(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('수정할 글', '내용', 'general')
+            )
+            db.commit()
+            response = client.get('/edit/1')
+            assert response.status_code == 200
+            assert '수정할 글'.encode() in response.data
+
+    def test_edit_post(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('원본 글', '원본 내용', 'general')
+            )
+            db.commit()
+        response = client.post('/edit/1', data={
+            'title': '수정된 글',
+            'content': '수정된 내용',
+            'category': 'tech'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+        assert '수정된 글'.encode() in response.data
+
+    def test_delete_post(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('삭제할 글', '내용', 'general')
+            )
+            db.commit()
+        response = client.post('/delete/1', follow_redirects=True)
+        assert response.status_code == 200
+        assert '삭제할 글'.encode() not in response.data
