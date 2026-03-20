@@ -341,3 +341,79 @@ class TestSearch:
             results = search_posts('Flask')
             assert len(results) == 1
             assert results[0]['title'] == 'Flask 입문'
+
+
+class TestPagination:
+    def _insert_posts(self, client, count):
+        with app.app_context():
+            db = get_db()
+            for i in range(count):
+                db.execute(
+                    "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                    (f'글 {i+1}', f'내용 {i+1}', 'general')
+                )
+            db.commit()
+
+    def test_index_limits_posts_per_page(self, client):
+        self._insert_posts(client, 12)
+        response = client.get('/?page=1')
+        data = response.data.decode()
+        count = sum(1 for i in range(1, 13) if f'글 {i}' in data)
+        assert count == 5
+
+    def test_page_2_shows_next_posts(self, client):
+        self._insert_posts(client, 12)
+        response = client.get('/?page=2')
+        data = response.data.decode()
+        count = sum(1 for i in range(1, 13) if f'글 {i}' in data)
+        assert count == 5
+
+    def test_page_3_shows_remaining(self, client):
+        self._insert_posts(client, 12)
+        response = client.get('/?page=3')
+        data = response.data.decode()
+        count = sum(1 for i in range(1, 13) if f'글 {i}' in data)
+        assert count == 2
+
+    def test_pagination_links_exist(self, client):
+        self._insert_posts(client, 12)
+        response = client.get('/?page=1')
+        data = response.data.decode()
+        assert 'pagination' in data
+
+    def test_invalid_page_defaults_to_1(self, client):
+        self._insert_posts(client, 12)
+        response = client.get('/?page=abc')
+        data = response.data.decode()
+        response_page1 = client.get('/?page=1')
+        data_page1 = response_page1.data.decode()
+        assert data == data_page1
+
+    def test_pagination_with_category(self, client):
+        with app.app_context():
+            db = get_db()
+            for i in range(8):
+                db.execute(
+                    "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                    (f'기술글 {i+1}', f'내용 {i+1}', 'tech')
+                )
+            for i in range(3):
+                db.execute(
+                    "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                    (f'일상글 {i+1}', f'내용 {i+1}', 'life')
+                )
+            db.commit()
+        response = client.get('/?category=tech&page=1')
+        data = response.data.decode()
+        assert '일상글' not in data
+        tech_count = sum(1 for i in range(1, 9) if f'기술글 {i}' in data)
+        assert tech_count == 5
+
+    def test_get_all_posts_pagination_model(self, client):
+        self._insert_posts(client, 12)
+        with app.app_context():
+            result = get_all_posts(page=1, per_page=5)
+            assert isinstance(result, dict)
+            assert len(result['posts']) == 5
+            assert result['total_pages'] == 3
+            assert result['page'] == 1
