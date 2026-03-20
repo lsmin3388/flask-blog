@@ -199,3 +199,87 @@ class TestStats:
         data = response.data.decode()
         assert 'tech' in data
         assert 'life' in data
+
+
+class TestValidation:
+    def test_create_empty_title_returns_error(self, client):
+        response = client.post('/create', data={
+            'title': '',
+            'content': '내용 있음',
+            'category': 'general'
+        })
+        assert response.status_code == 200
+        assert '제목과 내용을 입력해주세요'.encode() in response.data
+
+    def test_create_empty_content_returns_error(self, client):
+        response = client.post('/create', data={
+            'title': '제목 있음',
+            'content': '',
+            'category': 'general'
+        })
+        assert response.status_code == 200
+        assert '제목과 내용을 입력해주세요'.encode() in response.data
+
+    def test_create_whitespace_only_title_returns_error(self, client):
+        response = client.post('/create', data={
+            'title': '   ',
+            'content': '내용 있음',
+            'category': 'general'
+        })
+        assert response.status_code == 200
+        assert '제목과 내용을 입력해주세요'.encode() in response.data
+
+    def test_edit_empty_title_returns_error(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('원본 글', '원본 내용', 'general')
+            )
+            db.commit()
+        response = client.post('/edit/1', data={
+            'title': '',
+            'content': '수정 내용',
+            'category': 'general'
+        })
+        assert response.status_code == 200
+        assert '제목과 내용을 입력해주세요'.encode() in response.data
+
+    def test_edit_empty_content_returns_error(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('원본 글', '원본 내용', 'general')
+            )
+            db.commit()
+        response = client.post('/edit/1', data={
+            'title': '수정 제목',
+            'content': '',
+            'category': 'general'
+        })
+        assert response.status_code == 200
+        assert '제목과 내용을 입력해주세요'.encode() in response.data
+
+    def test_error_message_displayed(self, client):
+        response = client.post('/create', data={
+            'title': '',
+            'content': '',
+            'category': 'general'
+        })
+        assert response.status_code == 200
+        assert '제목과 내용을 입력해주세요'.encode() in response.data
+
+    def test_form_has_required_attributes(self, client):
+        response = client.get('/create')
+        data = response.data.decode()
+        assert 'required' in data
+
+    def test_valid_post_still_works(self, client):
+        response = client.post('/create', data={
+            'title': '정상 제목',
+            'content': '정상 내용',
+            'category': 'general'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+        assert '정상 제목'.encode() in response.data
