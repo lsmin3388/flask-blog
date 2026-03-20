@@ -55,6 +55,15 @@ def get_all_posts(category=None):
     return posts
 
 
+def search_posts(query):
+    db = get_db()
+    posts = db.execute(
+        "SELECT * FROM posts WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC",
+        (f'%{query}%', f'%{query}%')
+    ).fetchall()
+    return posts
+
+
 def get_post(post_id):
     db = get_db()
     return db.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()

@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, abort
 
 from models import (
     init_db, get_all_posts, get_post,
-    create_post, update_post, delete_post, get_stats
+    create_post, update_post, delete_post, get_stats,
+    search_posts
 )
 
 app = Flask(__name__)
@@ -58,6 +59,15 @@ def edit(post_id):
 def delete(post_id):
     delete_post(post_id)
     return redirect(url_for('index'))
+
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('index'))
+    posts = search_posts(query)
+    return render_template('search.html', posts=posts, query=query)
 
 
 @app.route('/stats')
