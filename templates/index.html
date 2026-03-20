@@ -2,6 +2,10 @@
 {% block title %}글 목록 - Flask Blog{% endblock %}
 {% block content %}
 <h1>글 목록</h1>
+<form action="/search" method="GET" class="search-form">
+    <input type="text" name="q" placeholder="검색어를 입력하세요">
+    <button type="submit">검색</button>
+</form>
 <div class="category-filter">
     <a href="/">전체</a>
     <a href="/?category=general">일반</a>
@@ -18,4 +22,12 @@
     </li>
     {% endfor %}
 </ul>
+{% if pagination and pagination.total_pages > 1 %}
+<div class="pagination">
+    {% for p in range(1, pagination.total_pages + 1) %}
+    <a href="/?page={{ p }}{% if category %}&category={{ category }}{% endif %}"
+       {% if p == pagination.page %}class="active"{% endif %}>{{ p }}</a>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

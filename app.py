@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, abort
 
 from models import (
     init_db, get_all_posts, get_post,
-    create_post, update_post, delete_post, get_stats
+    create_post, update_post, delete_post, get_stats,
+    search_posts
 )
 
 app = Flask(__name__)
@@ -15,8 +16,15 @@ init_db(app)
 @app.route('/')
 def index():
     category = request.args.get('category')
-    posts = get_all_posts(category)
-    return render_template('index.html', posts=posts, category=category)
+    try:
+        page = int(request.args.get('page', 1))
+    except (TypeError, ValueError):
+        page = 1
+    result = get_all_posts(category, page=page)
+    return render_template('index.html',
+                           posts=result['posts'],
+                           category=category,
+                           pagination=result)
 
 
 @app.route('/post/<int:post_id>')
@@ -33,6 +41,8 @@ def create():
         title = request.form['title']
         content = request.form['content']
         category = request.form.get('category', 'general')
+        if not title.strip() or not content.strip():
+            return render_template('form.html', error="제목과 내용을 입력해주세요")
         create_post(title, content, category)
         return redirect(url_for('index'))
     return render_template('form.html')
@@ -45,6 +55,8 @@ def edit(post_id):
         title = request.form['title']
         content = request.form['content']
         category = request.form.get('category', 'general')
+        if not title.strip() or not content.strip():
+            return render_template('form.html', post=post, error="제목과 내용을 입력해주세요")
         update_post(post_id, title, content, category)
         return redirect(url_for('index'))
     return render_template('form.html', post=post)
@@ -54,6 +66,15 @@ def edit(post_id):
 def delete(post_id):
     delete_post(post_id)
     return redirect(url_for('index'))
+
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('index'))
+    posts = search_posts(query)
+    return render_template('search.html', posts=posts, query=query)
 
 
 @app.route('/stats')

@@ -41,17 +41,53 @@ def init_db(app):
         db.close()
 
 
-def get_all_posts(category=None):
+def get_all_posts(category=None, page=None, per_page=5):
     db = get_db()
+    if page is None:
+        if category:
+            posts = db.execute(
+                "SELECT * FROM posts WHERE category = ? ORDER BY created_at DESC",
+                (category,)
+            ).fetchall()
+        else:
+            posts = db.execute(
+                "SELECT * FROM posts ORDER BY created_at DESC"
+            ).fetchall()
+        return posts
+
     if category:
-        posts = db.execute(
-            "SELECT * FROM posts WHERE category = ? ORDER BY created_at DESC",
+        total = db.execute(
+            "SELECT COUNT(*) as count FROM posts WHERE category = ?",
             (category,)
+        ).fetchone()['count']
+        posts = db.execute(
+            "SELECT * FROM posts WHERE category = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            (category, per_page, (page - 1) * per_page)
         ).fetchall()
     else:
+        total = db.execute(
+            "SELECT COUNT(*) as count FROM posts"
+        ).fetchone()['count']
         posts = db.execute(
-            "SELECT * FROM posts ORDER BY created_at DESC"
+            "SELECT * FROM posts ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            (per_page, (page - 1) * per_page)
         ).fetchall()
+
+    total_pages = (total + per_page - 1) // per_page
+    return {
+        'posts': posts,
+        'page': page,
+        'total_pages': total_pages,
+        'total': total
+    }
+
+
+def search_posts(query):
+    db = get_db()
+    posts = db.execute(
+        "SELECT * FROM posts WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC",
+        (f'%{query}%', f'%{query}%')
+    ).fetchall()
     return posts
 
 
