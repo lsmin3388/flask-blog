@@ -16,8 +16,15 @@ init_db(app)
 @app.route('/')
 def index():
     category = request.args.get('category')
-    posts = get_all_posts(category)
-    return render_template('index.html', posts=posts, category=category)
+    try:
+        page = int(request.args.get('page', 1))
+    except (TypeError, ValueError):
+        page = 1
+    result = get_all_posts(category, page=page)
+    return render_template('index.html',
+                           posts=result['posts'],
+                           category=category,
+                           pagination=result)
 
 
 @app.route('/post/<int:post_id>')

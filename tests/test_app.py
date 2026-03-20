@@ -5,7 +5,7 @@ import tempfile
 import pytest
 
 from app import app
-from models import get_db
+from models import get_db, get_all_posts
 
 
 @pytest.fixture
@@ -350,7 +350,7 @@ class TestPagination:
             for i in range(count):
                 db.execute(
                     "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                    (f'글 {i+1}', f'내용 {i+1}', 'general')
+                    (f'게시글제목{i+1}호', f'내용 {i+1}', 'general')
                 )
             db.commit()
 
@@ -358,21 +358,21 @@ class TestPagination:
         self._insert_posts(client, 12)
         response = client.get('/?page=1')
         data = response.data.decode()
-        count = sum(1 for i in range(1, 13) if f'글 {i}' in data)
+        count = sum(1 for i in range(1, 13) if f'게시글제목{i}호' in data)
         assert count == 5
 
     def test_page_2_shows_next_posts(self, client):
         self._insert_posts(client, 12)
         response = client.get('/?page=2')
         data = response.data.decode()
-        count = sum(1 for i in range(1, 13) if f'글 {i}' in data)
+        count = sum(1 for i in range(1, 13) if f'게시글제목{i}호' in data)
         assert count == 5
 
     def test_page_3_shows_remaining(self, client):
         self._insert_posts(client, 12)
         response = client.get('/?page=3')
         data = response.data.decode()
-        count = sum(1 for i in range(1, 13) if f'글 {i}' in data)
+        count = sum(1 for i in range(1, 13) if f'게시글제목{i}호' in data)
         assert count == 2
 
     def test_pagination_links_exist(self, client):
@@ -395,18 +395,18 @@ class TestPagination:
             for i in range(8):
                 db.execute(
                     "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                    (f'기술글 {i+1}', f'내용 {i+1}', 'tech')
+                    (f'기술글{i+1}호', f'내용 {i+1}', 'tech')
                 )
             for i in range(3):
                 db.execute(
                     "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                    (f'일상글 {i+1}', f'내용 {i+1}', 'life')
+                    (f'일상글{i+1}호', f'내용 {i+1}', 'life')
                 )
             db.commit()
         response = client.get('/?category=tech&page=1')
         data = response.data.decode()
         assert '일상글' not in data
-        tech_count = sum(1 for i in range(1, 9) if f'기술글 {i}' in data)
+        tech_count = sum(1 for i in range(1, 9) if f'기술글{i}호' in data)
         assert tech_count == 5
 
     def test_get_all_posts_pagination_model(self, client):
