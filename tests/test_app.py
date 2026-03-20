@@ -283,3 +283,61 @@ class TestValidation:
         }, follow_redirects=True)
         assert response.status_code == 200
         assert '정상 제목'.encode() in response.data
+
+
+class TestSearch:
+    def test_search_route_returns_200(self, client):
+        response = client.get('/search?q=test')
+        assert response.status_code == 200
+
+    def test_search_finds_matching_title(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('Flask 튜토리얼', '내용입니다', 'tech')
+            )
+            db.commit()
+        response = client.get('/search?q=Flask')
+        assert 'Flask 튜토리얼'.encode() in response.data
+
+    def test_search_finds_matching_content(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('제목', 'Python 프로그래밍 가이드', 'tech')
+            )
+            db.commit()
+        response = client.get('/search?q=Python')
+        assert '제목'.encode() in response.data
+
+    def test_search_no_results(self, client):
+        response = client.get('/search?q=존재하지않는검색어')
+        assert '검색 결과가 없습니다'.encode() in response.data
+
+    def test_search_empty_query_redirects(self, client):
+        response = client.get('/search?q=')
+        assert response.status_code == 302
+
+    def test_search_form_on_index(self, client):
+        response = client.get('/')
+        data = response.data.decode()
+        assert 'search' in data.lower() or '검색' in data
+
+    def test_search_model_function(self, client):
+        with app.app_context():
+            db = get_db()
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('Flask 입문', 'Flask 웹 개발', 'tech')
+            )
+            db.execute(
+                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+                ('Django 입문', 'Django 웹 개발', 'tech')
+            )
+            db.commit()
+            from models import search_posts
+            results = search_posts('Flask')
+            assert len(results) == 1
+            assert results[0]['title'] == 'Flask 입문'
