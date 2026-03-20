@@ -33,6 +33,8 @@ def create():
         title = request.form['title']
         content = request.form['content']
         category = request.form.get('category', 'general')
+        if not title.strip() or not content.strip():
+            return render_template('form.html', error="제목과 내용을 입력해주세요")
         create_post(title, content, category)
         return redirect(url_for('index'))
     return render_template('form.html')
@@ -45,6 +47,8 @@ def edit(post_id):
         title = request.form['title']
         content = request.form['content']
         category = request.form.get('category', 'general')
+        if not title.strip() or not content.strip():
+            return render_template('form.html', post=post, error="제목과 내용을 입력해주세요")
         update_post(post_id, title, content, category)
         return redirect(url_for('index'))
     return render_template('form.html', post=post)
