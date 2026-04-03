@@ -41,37 +41,34 @@ def init_db(app):
         db.close()
 
 
+def _build_post_query(category=None):
+    where_clause = ""
+    params = []
+    if category:
+        where_clause = " WHERE category = ?"
+        params.append(category)
+    return where_clause, params
+
+
 def get_all_posts(category=None, page=None, per_page=5):
     db = get_db()
+    where_clause, params = _build_post_query(category)
+
     if page is None:
-        if category:
-            posts = db.execute(
-                "SELECT * FROM posts WHERE category = ? ORDER BY created_at DESC",
-                (category,)
-            ).fetchall()
-        else:
-            posts = db.execute(
-                "SELECT * FROM posts ORDER BY created_at DESC"
-            ).fetchall()
+        posts = db.execute(
+            f"SELECT * FROM posts{where_clause} ORDER BY created_at DESC",
+            params
+        ).fetchall()
         return posts
 
-    if category:
-        total = db.execute(
-            "SELECT COUNT(*) as count FROM posts WHERE category = ?",
-            (category,)
-        ).fetchone()['count']
-        posts = db.execute(
-            "SELECT * FROM posts WHERE category = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
-            (category, per_page, (page - 1) * per_page)
-        ).fetchall()
-    else:
-        total = db.execute(
-            "SELECT COUNT(*) as count FROM posts"
-        ).fetchone()['count']
-        posts = db.execute(
-            "SELECT * FROM posts ORDER BY created_at DESC LIMIT ? OFFSET ?",
-            (per_page, (page - 1) * per_page)
-        ).fetchall()
+    total = db.execute(
+        f"SELECT COUNT(*) as count FROM posts{where_clause}",
+        params
+    ).fetchone()['count']
+    posts = db.execute(
+        f"SELECT * FROM posts{where_clause} ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        params + [per_page, (page - 1) * per_page]
+    ).fetchall()
 
     total_pages = (total + per_page - 1) // per_page
     return {
