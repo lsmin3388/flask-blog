@@ -5,7 +5,7 @@ import tempfile
 import pytest
 
 from app import app
-from models import get_db, get_all_posts
+from models import get_db, get_all_posts, SCHEMA
 
 
 @pytest.fixture
@@ -16,16 +16,7 @@ def client():
 
     with app.app_context():
         db = sqlite3.connect(db_path)
-        db.execute('''
-            CREATE TABLE IF NOT EXISTS posts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                content TEXT NOT NULL,
-                category TEXT DEFAULT 'general',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
+        db.execute(SCHEMA)
         db.commit()
         db.close()
 
@@ -34,6 +25,15 @@ def client():
 
     os.close(db_fd)
     os.unlink(db_path)
+
+
+def insert_post(title='테스트 글', content='테스트 내용', category='general'):
+    db = get_db()
+    db.execute(
+        "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
+        (title, content, category)
+    )
+    db.commit()
 
 
 class TestIndex:
@@ -47,27 +47,14 @@ class TestIndex:
 
     def test_index_page_shows_posts(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('테스트 글', '테스트 내용', 'tech')
-            )
-            db.commit()
+            insert_post('테스트 글', '테스트 내용', 'tech')
             response = client.get('/')
             assert '테스트 글'.encode() in response.data
 
     def test_index_page_filter_by_category(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('기술 글', '내용', 'tech')
-            )
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('일상 글', '내용', 'life')
-            )
-            db.commit()
+            insert_post('기술 글', '내용', 'tech')
+            insert_post('일상 글', '내용', 'life')
             response = client.get('/?category=tech')
             assert '기술 글'.encode() in response.data
             assert '일상 글'.encode() not in response.data
@@ -89,24 +76,14 @@ class TestCRUD:
 
     def test_edit_page_returns_200(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('수정할 글', '내용', 'general')
-            )
-            db.commit()
+            insert_post('수정할 글', '내용', 'general')
             response = client.get('/edit/1')
             assert response.status_code == 200
             assert '수정할 글'.encode() in response.data
 
     def test_edit_post(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('원본 글', '원본 내용', 'general')
-            )
-            db.commit()
+            insert_post('원본 글', '원본 내용', 'general')
         response = client.post('/edit/1', data={
             'title': '수정된 글',
             'content': '수정된 내용',
@@ -117,12 +94,7 @@ class TestCRUD:
 
     def test_delete_post(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('삭제할 글', '내용', 'general')
-            )
-            db.commit()
+            insert_post('삭제할 글', '내용', 'general')
         response = client.post('/delete/1', follow_redirects=True)
         assert response.status_code == 200
         assert '삭제할 글'.encode() not in response.data
@@ -131,23 +103,13 @@ class TestCRUD:
 class TestDetail:
     def test_post_detail_returns_200(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('상세 글', '상세 내용입니다', 'tech')
-            )
-            db.commit()
+            insert_post('상세 글', '상세 내용입니다', 'tech')
         response = client.get('/post/1')
         assert response.status_code == 200
 
     def test_post_detail_shows_content(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('상세 글', '상세 내용입니다', 'tech')
-            )
-            db.commit()
+            insert_post('상세 글', '상세 내용입니다', 'tech')
         response = client.get('/post/1')
         assert '상세 글'.encode() in response.data
         assert '상세 내용입니다'.encode() in response.data
@@ -164,16 +126,8 @@ class TestStats:
 
     def test_stats_shows_total_count(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('글1', '내용', 'tech')
-            )
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('글2', '내용', 'life')
-            )
-            db.commit()
+            insert_post('글1', '내용', 'tech')
+            insert_post('글2', '내용', 'life')
         response = client.get('/stats')
         assert response.status_code == 200
         data = response.data.decode()
@@ -181,20 +135,9 @@ class TestStats:
 
     def test_stats_shows_category_count(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('글1', '내용', 'tech')
-            )
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('글2', '내용', 'tech')
-            )
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('글3', '내용', 'life')
-            )
-            db.commit()
+            insert_post('글1', '내용', 'tech')
+            insert_post('글2', '내용', 'tech')
+            insert_post('글3', '내용', 'life')
         response = client.get('/stats')
         data = response.data.decode()
         assert 'tech' in data
@@ -231,12 +174,7 @@ class TestValidation:
 
     def test_edit_empty_title_returns_error(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('원본 글', '원본 내용', 'general')
-            )
-            db.commit()
+            insert_post('원본 글', '원본 내용', 'general')
         response = client.post('/edit/1', data={
             'title': '',
             'content': '수정 내용',
@@ -247,12 +185,7 @@ class TestValidation:
 
     def test_edit_empty_content_returns_error(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('원본 글', '원본 내용', 'general')
-            )
-            db.commit()
+            insert_post('원본 글', '원본 내용', 'general')
         response = client.post('/edit/1', data={
             'title': '수정 제목',
             'content': '',
@@ -292,23 +225,13 @@ class TestSearch:
 
     def test_search_finds_matching_title(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('Flask 튜토리얼', '내용입니다', 'tech')
-            )
-            db.commit()
+            insert_post('Flask 튜토리얼', '내용입니다', 'tech')
         response = client.get('/search?q=Flask')
         assert 'Flask 튜토리얼'.encode() in response.data
 
     def test_search_finds_matching_content(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('제목', 'Python 프로그래밍 가이드', 'tech')
-            )
-            db.commit()
+            insert_post('제목', 'Python 프로그래밍 가이드', 'tech')
         response = client.get('/search?q=Python')
         assert '제목'.encode() in response.data
 
@@ -327,16 +250,8 @@ class TestSearch:
 
     def test_search_model_function(self, client):
         with app.app_context():
-            db = get_db()
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('Flask 입문', 'Flask 웹 개발', 'tech')
-            )
-            db.execute(
-                "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                ('Django 입문', 'Django 웹 개발', 'tech')
-            )
-            db.commit()
+            insert_post('Flask 입문', 'Flask 웹 개발', 'tech')
+            insert_post('Django 입문', 'Django 웹 개발', 'tech')
             from models import search_posts
             results = search_posts('Flask')
             assert len(results) == 1
@@ -346,13 +261,8 @@ class TestSearch:
 class TestPagination:
     def _insert_posts(self, client, count):
         with app.app_context():
-            db = get_db()
             for i in range(count):
-                db.execute(
-                    "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                    (f'게시글제목{i+1}호', f'내용 {i+1}', 'general')
-                )
-            db.commit()
+                insert_post(f'게시글제목{i+1}호', f'내용 {i+1}', 'general')
 
     def test_index_limits_posts_per_page(self, client):
         self._insert_posts(client, 12)
@@ -391,18 +301,10 @@ class TestPagination:
 
     def test_pagination_with_category(self, client):
         with app.app_context():
-            db = get_db()
             for i in range(8):
-                db.execute(
-                    "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                    (f'기술글{i+1}호', f'내용 {i+1}', 'tech')
-                )
+                insert_post(f'기술글{i+1}호', f'내용 {i+1}', 'tech')
             for i in range(3):
-                db.execute(
-                    "INSERT INTO posts (title, content, category) VALUES (?, ?, ?)",
-                    (f'일상글{i+1}호', f'내용 {i+1}', 'life')
-                )
-            db.commit()
+                insert_post(f'일상글{i+1}호', f'내용 {i+1}', 'life')
         response = client.get('/?category=tech&page=1')
         data = response.data.decode()
         assert '일상글' not in data

@@ -3,15 +3,7 @@
 {% block content %}
 <h1>"{{ query }}" 검색 결과</h1>
 {% if posts %}
-<ul class="post-list">
-    {% for post in posts %}
-    <li>
-        <a href="/post/{{ post['id'] }}">{{ post['title'] }}</a>
-        <span class="category">{{ post['category'] }}</span>
-        <span class="date">{{ post['created_at'] }}</span>
-    </li>
-    {% endfor %}
-</ul>
+{% include '_post_list.html' %}
 {% else %}
 <p>검색 결과가 없습니다</p>
 {% endif %}

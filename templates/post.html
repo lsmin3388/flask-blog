@@ -11,11 +11,11 @@
         {{ post['content'] }}
     </div>
     <div class="post-actions">
-        <a href="/edit/{{ post['id'] }}">수정</a>
-        <form method="POST" action="/delete/{{ post['id'] }}" style="display:inline;">
+        <a href="{{ url_for('edit', post_id=post['id']) }}">수정</a>
+        <form method="POST" action="{{ url_for('delete', post_id=post['id']) }}" style="display:inline;">
             <button type="submit">삭제</button>
         </form>
     </div>
 </article>
-<a href="/">목록으로</a>
+<a href="{{ url_for('index') }}">목록으로</a>
 {% endblock %}
