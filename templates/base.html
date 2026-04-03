@@ -8,9 +8,9 @@
 </head>
 <body>
     <nav>
-        <a href="/">홈</a>
-        <a href="/create">글 작성</a>
-        <a href="/stats">통계</a>
+        <a href="{{ url_for('index') }}">홈</a>
+        <a href="{{ url_for('create') }}">글 작성</a>
+        <a href="{{ url_for('stats') }}">통계</a>
     </nav>
     <main>
         {% block content %}{% endblock %}
