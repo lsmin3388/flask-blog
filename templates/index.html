@@ -13,15 +13,7 @@
     <a href="{{ url_for('index', category='life') }}">일상</a>
     <a href="{{ url_for('index', category='study') }}">공부</a>
 </div>
-<ul class="post-list">
-    {% for post in posts %}
-    <li>
-        <a href="{{ url_for('post_detail', post_id=post['id']) }}">{{ post['title'] }}</a>
-        <span class="category">{{ post['category'] }}</span>
-        <span class="date">{{ post['created_at'] }}</span>
-    </li>
-    {% endfor %}
-</ul>
+{% include '_post_list.html' %}
 {% if pagination and pagination.total_pages > 1 %}
 <div class="pagination">
     {% for p in range(1, pagination.total_pages + 1) %}
