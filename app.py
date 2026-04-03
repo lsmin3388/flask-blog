@@ -13,6 +13,15 @@ app.config['TESTING'] = False
 init_db(app)
 
 
+def validate_post_form(form):
+    title = form['title']
+    content = form['content']
+    category = form.get('category', 'general')
+    if not title.strip() or not content.strip():
+        return None, None, None, "제목과 내용을 입력해주세요"
+    return title, content, category, None
+
+
 @app.route('/')
 def index():
     category = request.args.get('category')
@@ -38,11 +47,9 @@ def post_detail(post_id):
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        category = request.form.get('category', 'general')
-        if not title.strip() or not content.strip():
-            return render_template('form.html', error="제목과 내용을 입력해주세요")
+        title, content, category, error = validate_post_form(request.form)
+        if error:
+            return render_template('form.html', error=error)
         create_post(title, content, category)
         return redirect(url_for('index'))
     return render_template('form.html')
@@ -52,11 +59,9 @@ def create():
 def edit(post_id):
     post = get_post(post_id)
     if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        category = request.form.get('category', 'general')
-        if not title.strip() or not content.strip():
-            return render_template('form.html', post=post, error="제목과 내용을 입력해주세요")
+        title, content, category, error = validate_post_form(request.form)
+        if error:
+            return render_template('form.html', post=post, error=error)
         update_post(post_id, title, content, category)
         return redirect(url_for('index'))
     return render_template('form.html', post=post)
