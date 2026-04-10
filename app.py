@@ -5,6 +5,7 @@ statistics, and form validation.
 """
 
 from flask import Flask, render_template, request, redirect, url_for, abort
+from flasgger import Swagger
 
 from models import (
     init_db, get_all_posts, get_post,
@@ -15,6 +16,15 @@ from models import (
 app = Flask(__name__)
 app.config['DATABASE'] = 'blog.db'
 app.config['TESTING'] = False
+
+swagger_template = {
+    "info": {
+        "title": "Flask Blog API",
+        "description": "Flask 블로그 REST API 문서",
+        "version": "2.0.0",
+    }
+}
+Swagger(app, template=swagger_template)
 
 init_db(app)
 
