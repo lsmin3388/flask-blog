@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>models &mdash; Flask Blog 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Flask Blog
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/models.html">models module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Flask Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">models</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Database access layer for the Flask Blog application.</span>
+
+<span class="sd">Provides SQLite-backed CRUD operations for blog posts, including</span>
+<span class="sd">pagination, search, and statistics queries.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">g</span>
+
+
+<span class="n">SCHEMA</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    CREATE TABLE IF NOT EXISTS posts (</span>
+<span class="s1">        id INTEGER PRIMARY KEY AUTOINCREMENT,</span>
+<span class="s1">        title TEXT NOT NULL,</span>
+<span class="s1">        content TEXT NOT NULL,</span>
+<span class="s1">        category TEXT DEFAULT &#39;general&#39;,</span>
+<span class="s1">        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span>
+<span class="s1">        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+<span class="s1">    )</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="get_db">
+<a class="viewcode-back" href="../modules/models.html#models.get_db">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the database connection for the current request.</span>
+
+<span class="sd">    Uses Flask&#39;s ``g`` object to cache the connection per-request.</span>
+<span class="sd">    The connection uses ``sqlite3.Row`` as row factory so that</span>
+<span class="sd">    columns can be accessed by name.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        sqlite3.Connection: The active database connection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;db&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">current_app</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DATABASE&#39;</span><span class="p">],</span>
+            <span class="n">detect_types</span><span class="o">=</span><span class="n">sqlite3</span><span class="o">.</span><span class="n">PARSE_DECLTYPES</span>
+        <span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">db</span></div>
+
+
+
+<div class="viewcode-block" id="close_db">
+<a class="viewcode-back" href="../modules/models.html#models.close_db">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the database connection at the end of the request.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        e: An optional exception passed by Flask&#39;s teardown mechanism.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="init_db">
+<a class="viewcode-back" href="../modules/models.html#models.init_db">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_db</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the database and register the teardown hook.</span>
+
+<span class="sd">    Creates the posts table if it does not exist and registers</span>
+<span class="sd">    :func:`close_db` as a teardown handler.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        app (Flask): The Flask application instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">teardown_appcontext</span><span class="p">(</span><span class="n">close_db</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DATABASE&#39;</span><span class="p">])</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">SCHEMA</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_post_query</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a WHERE clause for filtering posts by category.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        category (str, optional): The category to filter by.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A (where_clause, params) pair where *where_clause* is</span>
+<span class="sd">            an SQL fragment (empty string when no filter) and *params*</span>
+<span class="sd">            is a list of bind values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">where_clause</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
+        <span class="n">where_clause</span> <span class="o">=</span> <span class="s2">&quot; WHERE category = ?&quot;</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">where_clause</span><span class="p">,</span> <span class="n">params</span>
+
+
+<div class="viewcode-block" id="get_all_posts">
+<a class="viewcode-back" href="../modules/models.html#models.get_all_posts">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_all_posts</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">per_page</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve posts with optional category filter and pagination.</span>
+
+<span class="sd">    When *page* is ``None``, returns a plain list of all matching</span>
+<span class="sd">    posts (backwards-compatible). When *page* is an integer, returns</span>
+<span class="sd">    a dict containing the paginated posts and metadata.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        category (str, optional): Filter by category name.</span>
+<span class="sd">        page (int, optional): The 1-based page number.</span>
+<span class="sd">        per_page (int): Number of posts per page. Defaults to 5.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list or dict: A list of ``sqlite3.Row`` when *page* is None,</span>
+<span class="sd">            or a dict with keys ``posts``, ``page``, ``total_pages``,</span>
+<span class="sd">            and ``total`` when paginating.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">where_clause</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">_build_post_query</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">page</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">posts</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SELECT * FROM posts</span><span class="si">{</span><span class="n">where_clause</span><span class="si">}</span><span class="s2"> ORDER BY created_at DESC&quot;</span><span class="p">,</span>
+            <span class="n">params</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">posts</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT COUNT(*) as count FROM posts</span><span class="si">{</span><span class="n">where_clause</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">params</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;SELECT * FROM posts</span><span class="si">{</span><span class="n">where_clause</span><span class="si">}</span><span class="s2"> ORDER BY created_at DESC LIMIT ? OFFSET ?&quot;</span><span class="p">,</span>
+        <span class="n">params</span> <span class="o">+</span> <span class="p">[</span><span class="n">per_page</span><span class="p">,</span> <span class="p">(</span><span class="n">page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">per_page</span><span class="p">]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+    <span class="n">total_pages</span> <span class="o">=</span> <span class="p">(</span><span class="n">total</span> <span class="o">+</span> <span class="n">per_page</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">per_page</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;posts&#39;</span><span class="p">:</span> <span class="n">posts</span><span class="p">,</span>
+        <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="n">page</span><span class="p">,</span>
+        <span class="s1">&#39;total_pages&#39;</span><span class="p">:</span> <span class="n">total_pages</span><span class="p">,</span>
+        <span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="n">total</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="search_posts">
+<a class="viewcode-back" href="../modules/models.html#models.search_posts">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">search_posts</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search posts by title or content using SQL LIKE.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query (str): The search keyword.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of ``sqlite3.Row`` matching the query,</span>
+<span class="sd">            ordered by creation date descending.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;SELECT * FROM posts WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC&quot;</span><span class="p">,</span>
+        <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;%</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;%</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">posts</span></div>
+
+
+
+<div class="viewcode-block" id="get_post">
+<a class="viewcode-back" href="../modules/models.html#models.get_post">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve a single post by its ID.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        post_id (int): The primary key of the post.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        sqlite3.Row or None: The matching post, or ``None`` if not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM posts WHERE id = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">post_id</span><span class="p">,))</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="create_post">
+<a class="viewcode-back" href="../modules/models.html#models.create_post">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_post</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;general&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert a new post into the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        title (str): The post title.</span>
+<span class="sd">        content (str): The post body text.</span>
+<span class="sd">        category (str): The category name. Defaults to ``&#39;general&#39;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;INSERT INTO posts (title, content, category) VALUES (?, ?, ?)&quot;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="update_post">
+<a class="viewcode-back" href="../modules/models.html#models.update_post">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update an existing post.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        post_id (int): The primary key of the post to update.</span>
+<span class="sd">        title (str): The new title.</span>
+<span class="sd">        content (str): The new body text.</span>
+<span class="sd">        category (str): The new category.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;UPDATE posts SET title = ?, content = ?, category = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?&quot;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">post_id</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="delete_post">
+<a class="viewcode-back" href="../modules/models.html#models.delete_post">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a post by its ID.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        post_id (int): The primary key of the post to delete.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM posts WHERE id = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">post_id</span><span class="p">,))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_stats">
+<a class="viewcode-back" href="../modules/models.html#models.get_stats">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute aggregate statistics for all posts.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dict with keys ``total`` (int), ``by_category``</span>
+<span class="sd">            (list of rows with category and count), and ``by_month``</span>
+<span class="sd">            (list of rows with month and count).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) as count FROM posts&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
+    <span class="n">by_category</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;SELECT category, COUNT(*) as count FROM posts GROUP BY category ORDER BY count DESC&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="n">by_month</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;SELECT strftime(&#39;%Y-%m&#39;, created_at) as month, COUNT(*) as count &quot;</span>
+        <span class="s2">&quot;FROM posts GROUP BY month ORDER BY month DESC&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="n">total</span><span class="p">,</span>
+        <span class="s1">&#39;by_category&#39;</span><span class="p">:</span> <span class="n">by_category</span><span class="p">,</span>
+        <span class="s1">&#39;by_month&#39;</span><span class="p">:</span> <span class="n">by_month</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lsmin3388.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

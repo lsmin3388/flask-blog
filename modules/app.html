@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app module &mdash; Flask Blog 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="models module" href="models.html" />
+    <link rel="prev" title="Flask Blog Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Flask Blog
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">app module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#app.validate_post_form"><code class="docutils literal notranslate"><span class="pre">validate_post_form()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.post_detail"><code class="docutils literal notranslate"><span class="pre">post_detail()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.create"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.edit"><code class="docutils literal notranslate"><span class="pre">edit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.delete"><code class="docutils literal notranslate"><span class="pre">delete()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.search"><code class="docutils literal notranslate"><span class="pre">search()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#app.stats"><code class="docutils literal notranslate"><span class="pre">stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">models module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Flask Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">app module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/app.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-app">
+<span id="app-module"></span><h1>app module<a class="headerlink" href="#module-app" title="Link to this heading"></a></h1>
+<p>Flask Blog application.</p>
+<p>Defines routes for blog post CRUD, search, pagination,
+statistics, and form validation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.validate_post_form">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">validate_post_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#validate_post_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.validate_post_form" title="Link to this definition"></a></dt>
+<dd><p>Validate the post creation/edit form fields.</p>
+<p>Extracts title, content, and category from the submitted form.
+Returns an error message if title or content is blank or
+whitespace-only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>form</strong> – A Flask <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> from <code class="docutils literal notranslate"><span class="pre">request.form</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">(title,</span> <span class="pre">content,</span> <span class="pre">category,</span> <span class="pre">error)</span></code> where <em>error</em></dt><dd><p>is <code class="docutils literal notranslate"><span class="pre">None</span></code> on success, or a Korean message string
+if validation fails.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.index">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.index" title="Link to this definition"></a></dt>
+<dd><p>Render the post list page with category filter and pagination.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Posts</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>-</em>) – category
+in: query
+type: string
+required: false
+description: 필터링할 카테고리</p></li>
+<li><p><strong>name</strong> – page
+in: query
+type: integer
+required: false
+default: 1
+description: 페이지 번호</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>200:</dt><dd><p>description: 글 목록 HTML 페이지</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.post_detail">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">post_detail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#post_detail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.post_detail" title="Link to this definition"></a></dt>
+<dd><p>Render the detail page for a single post.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Posts</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>-</em>) – post_id
+in: path
+type: integer
+required: true
+description: 조회할 글의 ID</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>200:</dt><dd><p>description: 글 상세 HTML 페이지</p>
+</dd>
+<dt>404:</dt><dd><p>description: 글을 찾을 수 없음</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.create">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.create" title="Link to this definition"></a></dt>
+<dd><p>Show the post creation form or process a new post.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Posts</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>-</em>) – title
+in: formData
+type: string
+required: true
+description: 글 제목</p></li>
+<li><p><strong>name</strong> – content
+in: formData
+type: string
+required: true
+description: 글 내용</p></li>
+<li><p><strong>name</strong> – category
+in: formData
+type: string
+required: false
+default: general
+description: 카테고리</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>200:</dt><dd><p>description: 작성 폼 또는 유효성 검사 오류</p>
+</dd>
+<dt>302:</dt><dd><p>description: 성공 시 글 목록으로 리다이렉트</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.edit">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">edit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#edit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.edit" title="Link to this definition"></a></dt>
+<dd><p>Show the post edit form or update the post.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Posts</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>-</em>) – post_id
+in: path
+type: integer
+required: true
+description: 수정할 글의 ID</p></li>
+<li><p><strong>name</strong> – title
+in: formData
+type: string
+required: true
+description: 글 제목</p></li>
+<li><p><strong>name</strong> – content
+in: formData
+type: string
+required: true
+description: 글 내용</p></li>
+<li><p><strong>name</strong> – category
+in: formData
+type: string
+required: false
+default: general
+description: 카테고리</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>200:</dt><dd><p>description: 수정 폼 또는 유효성 검사 오류</p>
+</dd>
+<dt>302:</dt><dd><p>description: 성공 시 글 목록으로 리다이렉트</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.delete">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.delete" title="Link to this definition"></a></dt>
+<dd><p>Delete a post and redirect to the index page.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Posts</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>-</em>) – post_id
+in: path
+type: integer
+required: true
+description: 삭제할 글의 ID</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>302:</dt><dd><p>description: 삭제 후 글 목록으로 리다이렉트</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.search">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.search" title="Link to this definition"></a></dt>
+<dd><p>Search posts by keyword and display results.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Search</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>-</em>) – q
+in: query
+type: string
+required: true
+description: 검색 키워드</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>200:</dt><dd><p>description: 검색 결과 HTML 페이지</p>
+</dd>
+<dt>302:</dt><dd><p>description: 빈 검색어 시 목록으로 리다이렉트</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.stats">
+<span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/app.html#stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#app.stats" title="Link to this definition"></a></dt>
+<dd><p>Render the statistics dashboard page.
+—
+tags:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Stats</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>responses:</dt><dd><dl class="simple">
+<dt>200:</dt><dd><p>description: 통계 대시보드 HTML 페이지</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Flask Blog Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models.html" class="btn btn-neutral float-right" title="models module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lsmin3388.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
