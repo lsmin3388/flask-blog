@@ -12,4 +12,4 @@ build/
 .claude/
 CLAUDE.md
 .DS_Store
-docs/_build/
+docs/build/
