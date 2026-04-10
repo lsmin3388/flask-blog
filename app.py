@@ -1,3 +1,9 @@
+"""Flask Blog application.
+
+Defines routes for blog post CRUD, search, pagination,
+statistics, and form validation.
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 from models import (
@@ -14,6 +20,20 @@ init_db(app)
 
 
 def validate_post_form(form):
+    """Validate the post creation/edit form fields.
+
+    Extracts title, content, and category from the submitted form.
+    Returns an error message if title or content is blank or
+    whitespace-only.
+
+    Args:
+        form: A Flask ``ImmutableMultiDict`` from ``request.form``.
+
+    Returns:
+        tuple: ``(title, content, category, error)`` where *error*
+            is ``None`` on success, or a Korean message string
+            if validation fails.
+    """
     title = form['title']
     content = form['content']
     category = form.get('category', 'general')
@@ -24,6 +44,7 @@ def validate_post_form(form):
 
 @app.route('/')
 def index():
+    """Render the post list page with category filter and pagination."""
     category = request.args.get('category')
     try:
         page = int(request.args.get('page', 1))
@@ -38,6 +59,14 @@ def index():
 
 @app.route('/post/<int:post_id>')
 def post_detail(post_id):
+    """Render the detail page for a single post.
+
+    Args:
+        post_id (int): The ID of the post to display.
+
+    Returns:
+        str: Rendered post.html template, or 404 if not found.
+    """
     post = get_post(post_id)
     if post is None:
         abort(404)
@@ -46,6 +75,7 @@ def post_detail(post_id):
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
+    """Show the post creation form (GET) or process a new post (POST)."""
     if request.method == 'POST':
         title, content, category, error = validate_post_form(request.form)
         if error:
@@ -57,6 +87,11 @@ def create():
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 def edit(post_id):
+    """Show the post edit form (GET) or update the post (POST).
+
+    Args:
+        post_id (int): The ID of the post to edit.
+    """
     post = get_post(post_id)
     if request.method == 'POST':
         title, content, category, error = validate_post_form(request.form)
@@ -69,12 +104,18 @@ def edit(post_id):
 
 @app.route('/delete/<int:post_id>', methods=['POST'])
 def delete(post_id):
+    """Delete a post and redirect to the index page.
+
+    Args:
+        post_id (int): The ID of the post to delete.
+    """
     delete_post(post_id)
     return redirect(url_for('index'))
 
 
 @app.route('/search')
 def search():
+    """Search posts by keyword and display results."""
     query = request.args.get('q', '').strip()
     if not query:
         return redirect(url_for('index'))
@@ -84,6 +125,7 @@ def search():
 
 @app.route('/stats')
 def stats():
+    """Render the statistics dashboard page."""
     stats_data = get_stats()
     return render_template('stats.html', stats=stats_data)
 
