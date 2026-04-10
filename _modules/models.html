@@ -41,8 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../modules/app.html">app module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/models.html">models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">flask-blog</a></li>
 </ul>
 
         </div>
@@ -94,7 +93,7 @@
 
 
 <div class="viewcode-block" id="get_db">
-<a class="viewcode-back" href="../modules/models.html#models.get_db">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.get_db">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_db</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the database connection for the current request.</span>
 
@@ -117,7 +116,7 @@
 
 
 <div class="viewcode-block" id="close_db">
-<a class="viewcode-back" href="../modules/models.html#models.close_db">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.close_db">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">close_db</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Close the database connection at the end of the request.</span>
 
@@ -131,7 +130,7 @@
 
 
 <div class="viewcode-block" id="init_db">
-<a class="viewcode-back" href="../modules/models.html#models.init_db">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.init_db">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">init_db</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the database and register the teardown hook.</span>
 
@@ -170,7 +169,7 @@
 
 
 <div class="viewcode-block" id="get_all_posts">
-<a class="viewcode-back" href="../modules/models.html#models.get_all_posts">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.get_all_posts">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_all_posts</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">per_page</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve posts with optional category filter and pagination.</span>
 
@@ -218,7 +217,7 @@
 
 
 <div class="viewcode-block" id="search_posts">
-<a class="viewcode-back" href="../modules/models.html#models.search_posts">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.search_posts">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">search_posts</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Search posts by title or content using SQL LIKE.</span>
 
@@ -239,7 +238,7 @@
 
 
 <div class="viewcode-block" id="get_post">
-<a class="viewcode-back" href="../modules/models.html#models.get_post">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.get_post">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve a single post by its ID.</span>
 
@@ -255,7 +254,7 @@
 
 
 <div class="viewcode-block" id="create_post">
-<a class="viewcode-back" href="../modules/models.html#models.create_post">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.create_post">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_post</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;general&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert a new post into the database.</span>
 
@@ -274,7 +273,7 @@
 
 
 <div class="viewcode-block" id="update_post">
-<a class="viewcode-back" href="../modules/models.html#models.update_post">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.update_post">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update an existing post.</span>
 
@@ -294,7 +293,7 @@
 
 
 <div class="viewcode-block" id="delete_post">
-<a class="viewcode-back" href="../modules/models.html#models.delete_post">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.delete_post">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete_post</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a post by its ID.</span>
 
@@ -308,7 +307,7 @@
 
 
 <div class="viewcode-block" id="get_stats">
-<a class="viewcode-back" href="../modules/models.html#models.get_stats">[docs]</a>
+<a class="viewcode-back" href="../models.html#models.get_stats">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute aggregate statistics for all posts.</span>
 

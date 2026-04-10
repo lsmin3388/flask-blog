@@ -1,24 +1,25 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>models module &mdash; Flask Blog 2.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=51b770b3"></script>
-      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=51b770b3"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="tests package" href="tests.html" />
     <link rel="prev" title="app module" href="app.html" /> 
 </head>
 
@@ -30,11 +31,11 @@
 
           
           
-          <a href="../index.html" class="icon icon-home">
+          <a href="index.html" class="icon icon-home">
             Flask Blog
           </a>
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -43,18 +44,22 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="app.html">app module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">models module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#models.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.close_db"><code class="docutils literal notranslate"><span class="pre">close_db()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.init_db"><code class="docutils literal notranslate"><span class="pre">init_db()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.get_all_posts"><code class="docutils literal notranslate"><span class="pre">get_all_posts()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.search_posts"><code class="docutils literal notranslate"><span class="pre">search_posts()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.get_post"><code class="docutils literal notranslate"><span class="pre">get_post()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.create_post"><code class="docutils literal notranslate"><span class="pre">create_post()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.update_post"><code class="docutils literal notranslate"><span class="pre">update_post()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.delete_post"><code class="docutils literal notranslate"><span class="pre">delete_post()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#models.get_stats"><code class="docutils literal notranslate"><span class="pre">get_stats()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">flask-blog</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="app.html">app module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">models module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.close_db"><code class="docutils literal notranslate"><span class="pre">close_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.init_db"><code class="docutils literal notranslate"><span class="pre">init_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.get_all_posts"><code class="docutils literal notranslate"><span class="pre">get_all_posts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.search_posts"><code class="docutils literal notranslate"><span class="pre">search_posts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.get_post"><code class="docutils literal notranslate"><span class="pre">get_post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.create_post"><code class="docutils literal notranslate"><span class="pre">create_post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.update_post"><code class="docutils literal notranslate"><span class="pre">update_post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.delete_post"><code class="docutils literal notranslate"><span class="pre">delete_post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models.get_stats"><code class="docutils literal notranslate"><span class="pre">get_stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
 </ul>
 </li>
 </ul>
@@ -65,17 +70,18 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Flask Blog</a>
+          <a href="index.html">Flask Blog</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">flask-blog</a></li>
       <li class="breadcrumb-item active">models module</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/modules/models.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/models.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -90,7 +96,7 @@
 pagination, search, and statistics queries.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="models.get_db">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_db" title="Link to this definition"></a></dt>
 <dd><p>Get the database connection for the current request.</p>
 <p>Uses Flask’s <code class="docutils literal notranslate"><span class="pre">g</span></code> object to cache the connection per-request.
 The connection uses <code class="docutils literal notranslate"><span class="pre">sqlite3.Row</span></code> as row factory so that
@@ -107,7 +113,7 @@ columns can be accessed by name.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.close_db">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">close_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#close_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.close_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">close_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#close_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.close_db" title="Link to this definition"></a></dt>
 <dd><p>Close the database connection at the end of the request.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -118,7 +124,7 @@ columns can be accessed by name.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.init_db">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#init_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.init_db" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">init_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#init_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.init_db" title="Link to this definition"></a></dt>
 <dd><p>Initialize the database and register the teardown hook.</p>
 <p>Creates the posts table if it does not exist and registers
 <a class="reference internal" href="#models.close_db" title="models.close_db"><code class="xref py py-func docutils literal notranslate"><span class="pre">close_db()</span></code></a> as a teardown handler.</p>
@@ -131,7 +137,7 @@ columns can be accessed by name.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.get_all_posts">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_all_posts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#get_all_posts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_all_posts" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_all_posts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_page</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#get_all_posts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_all_posts" title="Link to this definition"></a></dt>
 <dd><p>Retrieve posts with optional category filter and pagination.</p>
 <p>When <em>page</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returns a plain list of all matching
 posts (backwards-compatible). When <em>page</em> is an integer, returns
@@ -160,7 +166,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.search_posts">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">search_posts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#search_posts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.search_posts" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">search_posts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#search_posts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.search_posts" title="Link to this definition"></a></dt>
 <dd><p>Search posts by title or content using SQL LIKE.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -181,7 +187,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.get_post">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#get_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_post" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#get_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_post" title="Link to this definition"></a></dt>
 <dd><p>Retrieve a single post by its ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -198,7 +204,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.create_post">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">create_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'general'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#create_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.create_post" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">create_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'general'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#create_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.create_post" title="Link to this definition"></a></dt>
 <dd><p>Insert a new post into the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -213,7 +219,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.update_post">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">update_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#update_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.update_post" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">update_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#update_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.update_post" title="Link to this definition"></a></dt>
 <dd><p>Update an existing post.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -229,7 +235,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.delete_post">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">delete_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#delete_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.delete_post" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">delete_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">post_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#delete_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.delete_post" title="Link to this definition"></a></dt>
 <dd><p>Delete a post by its ID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -240,7 +246,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="models.get_stats">
-<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/models.html#get_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_stats" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">models.</span></span><span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/models.html#get_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#models.get_stats" title="Link to this definition"></a></dt>
 <dd><p>Compute aggregate statistics for all posts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -264,6 +270,7 @@ and <code class="docutils literal notranslate"><span class="pre">total</span></c
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="app.html" class="btn btn-neutral float-left" title="app module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tests.html" class="btn btn-neutral float-right" title="tests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

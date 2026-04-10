@@ -1,0 +1,560 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tests.test_app &mdash; Flask Blog 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Flask Blog
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">flask-blog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Flask Blog</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">tests.test_app</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for tests.test_app</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">app</span><span class="w"> </span><span class="kn">import</span> <span class="n">app</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">models</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span><span class="p">,</span> <span class="n">get_all_posts</span><span class="p">,</span> <span class="n">SCHEMA</span>
+
+
+<div class="viewcode-block" id="client">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.client">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">():</span>
+    <span class="n">db_fd</span><span class="p">,</span> <span class="n">db_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;TESTING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DATABASE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">db_path</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">SCHEMA</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">client</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">db_fd</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">db_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="insert_post">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.insert_post">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">insert_post</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;테스트 글&#39;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s1">&#39;테스트 내용&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;general&#39;</span><span class="p">):</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="s2">&quot;INSERT INTO posts (title, content, category) VALUES (?, ?, ?)&quot;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="TestIndex">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestIndex">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestIndex</span><span class="p">:</span>
+<div class="viewcode-block" id="TestIndex.test_index_page_returns_200">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestIndex.test_index_page_returns_200">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_index_page_returns_200</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="TestIndex.test_index_page_contains_title">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestIndex.test_index_page_contains_title">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_index_page_contains_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;글 목록&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestIndex.test_index_page_shows_posts">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestIndex.test_index_page_shows_posts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_index_page_shows_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;테스트 글&#39;</span><span class="p">,</span> <span class="s1">&#39;테스트 내용&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="s1">&#39;테스트 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestIndex.test_index_page_filter_by_category">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestIndex.test_index_page_filter_by_category">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_index_page_filter_by_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;기술 글&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;일상 글&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;life&#39;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?category=tech&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="s1">&#39;기술 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">assert</span> <span class="s1">&#39;일상 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestCRUD">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestCRUD">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCRUD</span><span class="p">:</span>
+<div class="viewcode-block" id="TestCRUD.test_create_page_returns_200">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestCRUD.test_create_page_returns_200">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_create_page_returns_200</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="TestCRUD.test_create_post">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestCRUD.test_create_post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_create_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;새 글&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;새 글 내용&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;tech&#39;</span>
+        <span class="p">},</span> <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;새 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestCRUD.test_edit_page_returns_200">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestCRUD.test_edit_page_returns_200">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_edit_page_returns_200</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;수정할 글&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;general&#39;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/edit/1&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+            <span class="k">assert</span> <span class="s1">&#39;수정할 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestCRUD.test_edit_post">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestCRUD.test_edit_post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_edit_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;원본 글&#39;</span><span class="p">,</span> <span class="s1">&#39;원본 내용&#39;</span><span class="p">,</span> <span class="s1">&#39;general&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/edit/1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;수정된 글&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;수정된 내용&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;tech&#39;</span>
+        <span class="p">},</span> <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;수정된 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestCRUD.test_delete_post">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestCRUD.test_delete_post">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_delete_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;삭제할 글&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;general&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/delete/1&#39;</span><span class="p">,</span> <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;삭제할 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestDetail">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestDetail">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestDetail</span><span class="p">:</span>
+<div class="viewcode-block" id="TestDetail.test_post_detail_returns_200">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestDetail.test_post_detail_returns_200">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_post_detail_returns_200</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;상세 글&#39;</span><span class="p">,</span> <span class="s1">&#39;상세 내용입니다&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/post/1&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="TestDetail.test_post_detail_shows_content">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestDetail.test_post_detail_shows_content">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_post_detail_shows_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;상세 글&#39;</span><span class="p">,</span> <span class="s1">&#39;상세 내용입니다&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/post/1&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;상세 글&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">assert</span> <span class="s1">&#39;상세 내용입니다&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestDetail.test_post_detail_not_found">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestDetail.test_post_detail_not_found">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_post_detail_not_found</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/post/999&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestStats">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestStats">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestStats</span><span class="p">:</span>
+<div class="viewcode-block" id="TestStats.test_stats_page_returns_200">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestStats.test_stats_page_returns_200">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stats_page_returns_200</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/stats&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="TestStats.test_stats_shows_total_count">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestStats.test_stats_shows_total_count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stats_shows_total_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;글1&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;글2&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;life&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/stats&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;2&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestStats.test_stats_shows_category_count">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestStats.test_stats_shows_category_count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_stats_shows_category_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;글1&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;글2&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;글3&#39;</span><span class="p">,</span> <span class="s1">&#39;내용&#39;</span><span class="p">,</span> <span class="s1">&#39;life&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/stats&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;tech&#39;</span> <span class="ow">in</span> <span class="n">data</span>
+        <span class="k">assert</span> <span class="s1">&#39;life&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestValidation">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestValidation</span><span class="p">:</span>
+<div class="viewcode-block" id="TestValidation.test_create_empty_title_returns_error">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_create_empty_title_returns_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_create_empty_title_returns_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;내용 있음&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목과 내용을 입력해주세요&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_create_empty_content_returns_error">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_create_empty_content_returns_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_create_empty_content_returns_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;제목 있음&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목과 내용을 입력해주세요&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_create_whitespace_only_title_returns_error">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_create_whitespace_only_title_returns_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_create_whitespace_only_title_returns_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;   &#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;내용 있음&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목과 내용을 입력해주세요&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_edit_empty_title_returns_error">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_edit_empty_title_returns_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_edit_empty_title_returns_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;원본 글&#39;</span><span class="p">,</span> <span class="s1">&#39;원본 내용&#39;</span><span class="p">,</span> <span class="s1">&#39;general&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/edit/1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;수정 내용&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목과 내용을 입력해주세요&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_edit_empty_content_returns_error">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_edit_empty_content_returns_error">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_edit_empty_content_returns_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;원본 글&#39;</span><span class="p">,</span> <span class="s1">&#39;원본 내용&#39;</span><span class="p">,</span> <span class="s1">&#39;general&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/edit/1&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;수정 제목&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목과 내용을 입력해주세요&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_error_message_displayed">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_error_message_displayed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_error_message_displayed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">})</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목과 내용을 입력해주세요&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_form_has_required_attributes">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_form_has_required_attributes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_form_has_required_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;required&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestValidation.test_valid_post_still_works">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestValidation.test_valid_post_still_works">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_valid_post_still_works</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;정상 제목&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;정상 내용&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;general&#39;</span>
+        <span class="p">},</span> <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="k">assert</span> <span class="s1">&#39;정상 제목&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestSearch">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestSearch</span><span class="p">:</span>
+<div class="viewcode-block" id="TestSearch.test_search_route_returns_200">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_route_returns_200">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_route_returns_200</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/search?q=test&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span></div>
+
+
+<div class="viewcode-block" id="TestSearch.test_search_finds_matching_title">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_finds_matching_title">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_finds_matching_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;Flask 튜토리얼&#39;</span><span class="p">,</span> <span class="s1">&#39;내용입니다&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/search?q=Flask&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;Flask 튜토리얼&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestSearch.test_search_finds_matching_content">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_finds_matching_content">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_finds_matching_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;제목&#39;</span><span class="p">,</span> <span class="s1">&#39;Python 프로그래밍 가이드&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/search?q=Python&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;제목&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestSearch.test_search_no_results">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_no_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_no_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/search?q=존재하지않는검색어&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="s1">&#39;검색 결과가 없습니다&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestSearch.test_search_empty_query_redirects">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_empty_query_redirects">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_empty_query_redirects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/search?q=&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">302</span></div>
+
+
+<div class="viewcode-block" id="TestSearch.test_search_form_on_index">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_form_on_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_form_on_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;search&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s1">&#39;검색&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestSearch.test_search_model_function">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestSearch.test_search_model_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_search_model_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;Flask 입문&#39;</span><span class="p">,</span> <span class="s1">&#39;Flask 웹 개발&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="n">insert_post</span><span class="p">(</span><span class="s1">&#39;Django 입문&#39;</span><span class="p">,</span> <span class="s1">&#39;Django 웹 개발&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">models</span><span class="w"> </span><span class="kn">import</span> <span class="n">search_posts</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">search_posts</span><span class="p">(</span><span class="s1">&#39;Flask&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">assert</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;title&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Flask 입문&#39;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TestPagination">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestPagination</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_insert_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                <span class="n">insert_post</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;게시글제목</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">호&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;내용 </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;general&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TestPagination.test_index_limits_posts_per_page">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_index_limits_posts_per_page">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_index_limits_posts_per_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_posts</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?page=1&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span> <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;게시글제목</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">호&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">5</span></div>
+
+
+<div class="viewcode-block" id="TestPagination.test_page_2_shows_next_posts">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_page_2_shows_next_posts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_page_2_shows_next_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_posts</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?page=2&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span> <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;게시글제목</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">호&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">5</span></div>
+
+
+<div class="viewcode-block" id="TestPagination.test_page_3_shows_remaining">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_page_3_shows_remaining">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_page_3_shows_remaining</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_posts</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?page=3&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span> <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;게시글제목</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">호&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="TestPagination.test_pagination_links_exist">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_pagination_links_exist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_pagination_links_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_posts</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?page=1&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;pagination&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="TestPagination.test_invalid_page_defaults_to_1">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_invalid_page_defaults_to_1">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_invalid_page_defaults_to_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_posts</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?page=abc&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">response_page1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?page=1&#39;</span><span class="p">)</span>
+        <span class="n">data_page1</span> <span class="o">=</span> <span class="n">response_page1</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">data</span> <span class="o">==</span> <span class="n">data_page1</span></div>
+
+
+<div class="viewcode-block" id="TestPagination.test_pagination_with_category">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_pagination_with_category">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_pagination_with_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+                <span class="n">insert_post</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;기술글</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">호&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;내용 </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;tech&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">insert_post</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;일상글</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">호&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;내용 </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;life&#39;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/?category=tech&amp;page=1&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s1">&#39;일상글&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span>
+        <span class="n">tech_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span> <span class="k">if</span> <span class="sa">f</span><span class="s1">&#39;기술글</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">호&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">tech_count</span> <span class="o">==</span> <span class="mi">5</span></div>
+
+
+<div class="viewcode-block" id="TestPagination.test_get_all_posts_pagination_model">
+<a class="viewcode-back" href="../../tests.test_app.html#tests.test_app.TestPagination.test_get_all_posts_pagination_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_get_all_posts_pagination_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_posts</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">get_all_posts</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">per_page</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">5</span>
+            <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;total_pages&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+            <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;page&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lsmin3388.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

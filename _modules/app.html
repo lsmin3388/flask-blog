@@ -41,8 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../modules/app.html">app module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/models.html">models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">flask-blog</a></li>
 </ul>
 
         </div>
@@ -102,7 +101,7 @@
 
 
 <div class="viewcode-block" id="validate_post_form">
-<a class="viewcode-back" href="../modules/app.html#app.validate_post_form">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.validate_post_form">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_post_form</span><span class="p">(</span><span class="n">form</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate the post creation/edit form fields.</span>
 
@@ -128,7 +127,7 @@
 
 
 <div class="viewcode-block" id="index">
-<a class="viewcode-back" href="../modules/app.html#app.index">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.index">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the post list page with category filter and pagination.</span>
@@ -165,7 +164,7 @@
 
 
 <div class="viewcode-block" id="post_detail">
-<a class="viewcode-back" href="../modules/app.html#app.post_detail">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.post_detail">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/post/&lt;int:post_id&gt;&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">post_detail</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the detail page for a single post.</span>
@@ -192,7 +191,7 @@
 
 
 <div class="viewcode-block" id="create">
-<a class="viewcode-back" href="../modules/app.html#app.create">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.create">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/create&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the post creation form or process a new post.</span>
@@ -233,7 +232,7 @@
 
 
 <div class="viewcode-block" id="edit">
-<a class="viewcode-back" href="../modules/app.html#app.edit">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.edit">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/edit/&lt;int:post_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">edit</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show the post edit form or update the post.</span>
@@ -280,7 +279,7 @@
 
 
 <div class="viewcode-block" id="delete">
-<a class="viewcode-back" href="../modules/app.html#app.delete">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.delete">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/delete/&lt;int:post_id&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="n">post_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a post and redirect to the index page.</span>
@@ -303,7 +302,7 @@
 
 
 <div class="viewcode-block" id="search">
-<a class="viewcode-back" href="../modules/app.html#app.search">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.search">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Search posts by keyword and display results.</span>
@@ -331,7 +330,7 @@
 
 
 <div class="viewcode-block" id="stats">
-<a class="viewcode-back" href="../modules/app.html#app.stats">[docs]</a>
+<a class="viewcode-back" href="../app.html#app.stats">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/stats&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">stats</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render the statistics dashboard page.</span>

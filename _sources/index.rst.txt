@@ -8,5 +8,4 @@ TDD(Test-Driven Development) 방식으로 개발되었습니다.
    :maxdepth: 2
    :caption: Contents:
 
-   modules/app
-   modules/models
+   modules
