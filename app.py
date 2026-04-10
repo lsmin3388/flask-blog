@@ -54,7 +54,26 @@ def validate_post_form(form):
 
 @app.route('/')
 def index():
-    """Render the post list page with category filter and pagination."""
+    """Render the post list page with category filter and pagination.
+    ---
+    tags:
+      - Posts
+    parameters:
+      - name: category
+        in: query
+        type: string
+        required: false
+        description: 필터링할 카테고리
+      - name: page
+        in: query
+        type: integer
+        required: false
+        default: 1
+        description: 페이지 번호
+    responses:
+      200:
+        description: 글 목록 HTML 페이지
+    """
     category = request.args.get('category')
     try:
         page = int(request.args.get('page', 1))
@@ -70,12 +89,20 @@ def index():
 @app.route('/post/<int:post_id>')
 def post_detail(post_id):
     """Render the detail page for a single post.
-
-    Args:
-        post_id (int): The ID of the post to display.
-
-    Returns:
-        str: Rendered post.html template, or 404 if not found.
+    ---
+    tags:
+      - Posts
+    parameters:
+      - name: post_id
+        in: path
+        type: integer
+        required: true
+        description: 조회할 글의 ID
+    responses:
+      200:
+        description: 글 상세 HTML 페이지
+      404:
+        description: 글을 찾을 수 없음
     """
     post = get_post(post_id)
     if post is None:
@@ -85,7 +112,33 @@ def post_detail(post_id):
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
-    """Show the post creation form (GET) or process a new post (POST)."""
+    """Show the post creation form or process a new post.
+    ---
+    tags:
+      - Posts
+    parameters:
+      - name: title
+        in: formData
+        type: string
+        required: true
+        description: 글 제목
+      - name: content
+        in: formData
+        type: string
+        required: true
+        description: 글 내용
+      - name: category
+        in: formData
+        type: string
+        required: false
+        default: general
+        description: 카테고리
+    responses:
+      200:
+        description: 작성 폼 또는 유효성 검사 오류
+      302:
+        description: 성공 시 글 목록으로 리다이렉트
+    """
     if request.method == 'POST':
         title, content, category, error = validate_post_form(request.form)
         if error:
@@ -97,10 +150,37 @@ def create():
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 def edit(post_id):
-    """Show the post edit form (GET) or update the post (POST).
-
-    Args:
-        post_id (int): The ID of the post to edit.
+    """Show the post edit form or update the post.
+    ---
+    tags:
+      - Posts
+    parameters:
+      - name: post_id
+        in: path
+        type: integer
+        required: true
+        description: 수정할 글의 ID
+      - name: title
+        in: formData
+        type: string
+        required: true
+        description: 글 제목
+      - name: content
+        in: formData
+        type: string
+        required: true
+        description: 글 내용
+      - name: category
+        in: formData
+        type: string
+        required: false
+        default: general
+        description: 카테고리
+    responses:
+      200:
+        description: 수정 폼 또는 유효성 검사 오류
+      302:
+        description: 성공 시 글 목록으로 리다이렉트
     """
     post = get_post(post_id)
     if request.method == 'POST':
@@ -115,9 +195,18 @@ def edit(post_id):
 @app.route('/delete/<int:post_id>', methods=['POST'])
 def delete(post_id):
     """Delete a post and redirect to the index page.
-
-    Args:
-        post_id (int): The ID of the post to delete.
+    ---
+    tags:
+      - Posts
+    parameters:
+      - name: post_id
+        in: path
+        type: integer
+        required: true
+        description: 삭제할 글의 ID
+    responses:
+      302:
+        description: 삭제 후 글 목록으로 리다이렉트
     """
     delete_post(post_id)
     return redirect(url_for('index'))
@@ -125,7 +214,22 @@ def delete(post_id):
 
 @app.route('/search')
 def search():
-    """Search posts by keyword and display results."""
+    """Search posts by keyword and display results.
+    ---
+    tags:
+      - Search
+    parameters:
+      - name: q
+        in: query
+        type: string
+        required: true
+        description: 검색 키워드
+    responses:
+      200:
+        description: 검색 결과 HTML 페이지
+      302:
+        description: 빈 검색어 시 목록으로 리다이렉트
+    """
     query = request.args.get('q', '').strip()
     if not query:
         return redirect(url_for('index'))
@@ -135,7 +239,14 @@ def search():
 
 @app.route('/stats')
 def stats():
-    """Render the statistics dashboard page."""
+    """Render the statistics dashboard page.
+    ---
+    tags:
+      - Stats
+    responses:
+      200:
+        description: 통계 대시보드 HTML 페이지
+    """
     stats_data = get_stats()
     return render_template('stats.html', stats=stats_data)
 
